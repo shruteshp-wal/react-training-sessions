@@ -5,6 +5,7 @@ import TodoApp from './TodoApp';
 import Counter from './Counter';
 import axios from 'axios';
 import _ from 'lodash';
+import cx from 'classnames';
 
 
 class UserList extends Component {
@@ -384,4 +385,235 @@ class CountryForm extends Component {
   }
 }
 
-export default CountryForm;
+
+class FilteredList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      items: [1,2,3,4,5,6,7,8,9,10]
+    };
+  }
+  render() {
+    return (
+      <List items={this.state.items.filter(this.props.filterFn)}/>
+    );
+  }
+}
+
+function filterEven(item){
+  return item % 2 == 0
+}
+
+function filterOdd(item){
+  return item % 2 !== 0
+}
+class List extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div style={{border: '1px solid red'}}>
+          {
+            this.props.items.map((item, index) => {
+              return <h1 key={`${index}_listItem`}>{item}</h1>
+            })
+          }
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+function createFilteredList(WrappedComponent, filterfn) {
+  let items = [1,2,3,4,5,6,7,8,9,10];
+
+  let filteredItems = items.filter(filterfn);
+
+  return class WrapperComponent extends Component {
+    render() {
+      return (
+        <WrappedComponent items={filteredItems}/>
+      );
+    }
+  }
+  
+}
+
+
+const FiveMultipleList = createFilteredList(List, (item) => {
+  return item % 5 == 0;
+})
+
+
+
+class YellowList extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div style={{border: '1px solid red', backgroundColor: 'yellow'}}>
+          {
+            this.props.items.map((item, index) => {
+              return <h1 key={`${index}_listItem`}>{item}</h1>
+            })
+          }
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+class BlueList extends Component {
+  constructor(props) {
+    super(props);
+
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div style={{border: '1px solid red', backgroundColor: 'blue'}}>
+          {
+            
+          }
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+// const EvenNumberList = createFilteredList(YellowList, filterEven)
+// const OddNumberList = createFilteredList(BlueList, filterOdd)
+
+
+class SuperDuperCommentList extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div style={{border: '1px solid red', backgroundColor: 'blue'}}>
+          {
+            this.props.items.map((item, index) => {
+              return (
+                <React.Fragment>
+                  <h1 key={`${index}_listItem`}>{item}</h1>
+                  <button type="button">Reply</button>
+                </React.Fragment>
+              )
+            })
+          }
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+class NormalCommentList extends Component {
+  constructor(props) {
+    super(props);
+
+    this.renderItems = this.renderItems.bind(this)
+  }
+
+  renderItems() {
+    let renderer;
+    if(this.props.itemRenderer){
+      renderer = this.props.itemRenderer
+    } else {
+      renderer = (item, index) => {
+        return (
+          <React.Fragment>
+            <h1 key={`${index}_listItem`}>{item}</h1>
+          </React.Fragment>
+        )
+      }
+    }
+    return this.props.items.map(renderer)
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <div style={{border: '1px solid red', backgroundColor: 'yellow'}}>
+          {
+            this.renderItems()
+          }
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+
+function h5ItemRenderer(item, index) {
+  return (
+    <React.Fragment>
+      <h5 key={`${index}_listItem`}>{item}</h5>
+    </React.Fragment>
+  )
+}
+
+
+
+
+
+const EvenNumberList = createFilteredList(SuperDuperCommentList, filterEven)
+const OddNumberList = createFilteredList(NormalCommentList, filterOdd)
+
+
+const UserList1 = (props) => (
+  <React.Fragment>
+    {
+      props.users.map((user, index)=>{
+        return <div className={cx({
+          active: user.active,
+          greenBorder: user.isAdmin
+        }, "user-item")}>{user.name}</div>
+      })
+    }
+  </React.Fragment>
+)
+
+class App7 extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <OddNumberList/>
+        <EvenNumberList/>
+        <NormalCommentList 
+          items={[1,2,3,4,5]}
+          itemRenderer={h5ItemRenderer}
+        />
+      </React.Fragment>
+    );
+  }
+}
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <UserList1
+          users={[
+            {name: "abc", active: true, isAdmin: false},
+            {name: "abca", active: false, isAdmin: false},
+            {name: "abasdfac", active: true, isAdmin: true},
+            {name: "abasdc", active: false, isAdmin: true},
+            {name: "abasdfc", active: true, isAdmin: false},
+          ]}
+        />
+      </React.Fragment>
+    );
+  }
+}
+export default App;

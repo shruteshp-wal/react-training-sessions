@@ -8,3 +8,15 @@ button[disabled]{
   background: red;
 }
 
+
+.active{
+  border: 3px solid #ff0000;
+}
+
+.greenBorder{
+  border: 3px solid green;
+}
+
+.user-item{
+  background-color: #808080;
+}
